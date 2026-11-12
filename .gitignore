@@ -1,0 +1,15 @@
+# Dependências e pacotes
+node_modules/
+
+# Arquivos de sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos locais do VS Code (opcional manter configurações compartilhadas)
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# Logs e arquivos temporários
+*.log
+*.tmp

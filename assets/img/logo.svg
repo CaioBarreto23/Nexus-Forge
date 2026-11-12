@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <defs>
+    <linearGradient id="nfBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B0F17" />
+      <stop offset="100%" stop-color="#1E1B4B" />
+    </linearGradient>
+    <linearGradient id="nfPrimary" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C3AED" />
+      <stop offset="50%" stop-color="#4F9CF9" />
+      <stop offset="100%" stop-color="#10B981" />
+    </linearGradient>
+    <linearGradient id="nfGreen" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="#34D399" />
+    </linearGradient>
+  </defs>
+
+  <!-- Moldura escura arredondada com borda gradiente -->
+  <rect x="4" y="4" width="112" height="112" rx="26" fill="url(#nfBg)" stroke="url(#nfPrimary)" stroke-width="5" />
+
+  <!-- Hexágono interno sutil (malha de rede / forja) -->
+  <polygon points="60,16 98,38 98,82 60,104 22,82 22,38" fill="none" stroke="#1E293B" stroke-width="2.5" />
+
+  <!-- Símbolo "N" de Nexus conectado por nós de rede -->
+  <path d="M 34 82 L 34 38 L 68 82 L 68 38" fill="none" stroke="url(#nfPrimary)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Nós das extremidades do N -->
+  <circle cx="34" cy="38" r="5.5" fill="#A78BFA" />
+  <circle cx="34" cy="82" r="5.5" fill="#7C3AED" />
+  <circle cx="68" cy="82" r="5.5" fill="#34D399" />
+  <circle cx="68" cy="38" r="5.5" fill="#10B981" />
+
+  <!-- Cursor de terminal / bigorna da forja (_) à direita -->
+  <line x1="78" y1="82" x2="94" y2="82" stroke="url(#nfGreen)" stroke-width="9" stroke-linecap="round" />
+
+  <!-- Centelha de automação (Forge Spark) -->
+  <polygon points="88,34 78,52 86,52 83,66 97,46 88,46" fill="#34D399" />
+</svg>

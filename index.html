@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus Forge — Gerador de Playbooks Ansible & Scripts CLI</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/hub.css">
+  <link rel="stylesheet" href="css/modals.css">
+</head>
+<body>
+<div id="authGate">
+  <div class="ag-grid">
+    <!-- LADO ESQUERDO: painel visual -->
+    <div class="ag-left">
+      <div class="ag-glow ag-glow-purple"></div>
+      <div class="ag-glow ag-glow-green"></div>
+      <div class="ag-brand">
+        <div class="ag-logo-box"><img id="authLogoLeft" src="assets/img/logo.svg" alt="Nexus Forge"></div>
+        <span class="ag-brand-txt">Nexus <span class="ag-grad">Forge</span></span>
+      </div>
+      <div class="ag-hero">
+        <div class="ag-badge">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#34D399" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          <span>Orquestração &amp; Automação</span>
+        </div>
+        <h1 class="ag-title">Orquestre suas redes com precisão e velocidade.</h1>
+        <p class="ag-sub">Gere scripts automatizados, migre configurações de múltiplos fabricantes e padronize sua infraestrutura em poucos cliques.</p>
+        <div class="ag-features">
+          <div class="ag-feat">
+            <div class="ag-feat-ic ag-ic-purple"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg></div>
+            <div><h4>Tradução Multi-OS</h4><p>EXOS, VOSS, FastIron e mais.</p></div>
+          </div>
+          <div class="ag-feat">
+            <div class="ag-feat-ic ag-ic-green"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M9 12l2 2 4-4"></path></svg></div>
+            <div><h4>Sintaxe Validada</h4><p>Livre de erros de sintaxe.</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- LADO DIREITO: formulário -->
+    <div class="ag-right">
+      <div class="ag-mobilelogo">
+        <div class="ag-logo-box sm"><img id="authLogoMobile" src="assets/img/logo.svg" alt="Nexus Forge"></div>
+        <span>Nexus Forge</span>
+      </div>
+      <div class="ag-form-wrap">
+        <div class="ag-form-head">
+          <h2 id="form-title">Acesse sua conta</h2>
+          <p id="form-subtitle">Entre com seu e-mail @gmail.com para continuar.</p>
+        </div>
+        <div class="ag-first" id="authFirstMsg" style="display:none">Nenhum usuário cadastrado ainda. Crie o primeiro acesso com um e-mail <b>@gmail.com</b> — ele será o <b>administrador</b> da plataforma.</div>
+        <!-- Abas -->
+        <div class="ag-tabs" id="authTabs">
+          <div class="ag-tab-indicator" id="tab-indicator"></div>
+          <button id="tab-login" class="ag-tab active" onclick="authSwitch('login')">Entrar</button>
+          <button id="tab-register" class="ag-tab" onclick="authSwitch('signup')">Criar conta</button>
+        </div>
+        <!-- LOGIN -->
+        <div id="form-login-content">
+          <div class="ag-field">
+            <label>E-mail (@gmail.com)</label>
+            <div class="ag-input">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              <input type="email" id="authUser" autocomplete="off" placeholder="seu.email@gmail.com" onkeydown="if(event.key==='Enter')authSubmit()">
+            </div>
+          </div>
+          <div class="ag-field">
+            <label>Senha</label>
+            <div class="ag-input">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              <input type="password" id="authPass" placeholder="••••••••••••" onkeydown="if(event.key==='Enter')authSubmit()">
+              <button type="button" class="ag-eye" onclick="agTogglePass('authPass',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+            </div>
+          </div>
+          <div class="ag-error" id="authError" style="display:none"></div>
+          <button class="ag-submit ag-submit-purple" onclick="authSubmit()">
+            <span id="loginBtnLabel">Acessar Plataforma</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </div>
+        <!-- CADASTRO -->
+        <div id="form-register-content" style="display:none">
+          <div class="ag-field">
+            <label>Nome Completo</label>
+            <div class="ag-input ag-input-green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <input type="text" id="authName" autocomplete="off" placeholder="Ex: João Silva">
+            </div>
+          </div>
+          <div class="ag-field">
+            <label>E-mail (@gmail.com)</label>
+            <div class="ag-input ag-input-green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              <input type="email" id="authEmail" autocomplete="off" placeholder="seu.email@gmail.com" onkeydown="if(event.key==='Enter')authSubmit()">
+            </div>
+          </div>
+          <div class="ag-field">
+            <label>Senha</label>
+            <div class="ag-input ag-input-green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              <input type="password" id="authPassReg" placeholder="Mínimo de 8 caracteres" onkeydown="if(event.key==='Enter')authSubmit()">
+              <button type="button" class="ag-eye" onclick="agTogglePass('authPassReg',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+            </div>
+          </div>
+          <div class="ag-error" id="authErrorReg" style="display:none"></div>
+          <button class="ag-submit ag-submit-green" onclick="authSubmit()">
+            <span id="regBtnLabel">Criar Minha Conta</span>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="hub">
+  <div class="hub-header">
+    <div class="hub-logo" onclick="logoHome()" style="cursor:pointer" title="Voltar ao dashboard"><img src="assets/img/logo.svg" alt="Nexus Forge"></div>
+    <div>
+      <h1>Nexus Forge</h1>
+      <div class="sub">Automação e implementação de rede · projetos por cliente</div>
+    </div>
+    <div class="hub-actions">
+      <span id="hubBackupActions" style="display:flex;gap:10px;align-items:center">
+        <button class="btn-ghost" onclick="exportDB()">⬇ Exportar backup</button>
+        <button class="btn-ghost" onclick="document.getElementById('dbimp').click()">⬆ Importar backup</button>
+        <input type="file" id="dbimp" accept=".json" style="display:none" onchange="importDB(event)">
+      </span>
+      <span id="userBadge" style="display:flex;align-items:center;gap:8px;margin-left:8px"></span>
+    </div>
+  </div>
+  <div class="hub-body" id="hubBody"></div>
+</div>
+
+<header>
+  <button class="back-link" onclick="goProjects()" style="margin-right:2px" title="Voltar para projetos">←</button>
+  <div class="logo" onclick="logoHome()" style="cursor:pointer" title="Voltar ao dashboard"><img id="scriptsLogo" src="assets/img/logo.svg" alt="Nexus Forge"></div>
+  <div>
+    <h1 id="appTitle">Gerador de Playbooks Ansible</h1>
+    <div class="sub" id="appSub">Rede multivendor + servidores · saída Ansible</div>
+  </div>
+  <div class="mode-switch" id="modeSwitch" style="margin-left:auto">
+    <button data-mode="ansible" onclick="setMode('ansible')">Ansible</button>
+    <button data-mode="exos" onclick="setMode('exos')">EXOS</button>
+    <button data-mode="ruckus" onclick="setMode('ruckus')">Ruckus</button>
+    <button data-mode="fabric" onclick="setMode('fabric')">Fabric</button>
+  </div>
+  <span id="userBadgeScripts" style="display:flex;align-items:center;gap:8px"></span>
+</header>
+
+<div class="wrap">
+  <div class="left">
+    <details class="help" id="help" open>
+      <summary><span>📖 Como usar</span><span class="help-toggle">ocultar</span></summary>
+      <div class="help-body">
+        <p>Escolha o <b>modo</b> no topo direito: <b>Ansible</b> gera um <code>playbook.yml</code> + <code>hosts.ini</code>; <b>EXOS</b>, <b>Ruckus</b> e <b>Fabric</b> (Extreme VOSS / Fabric Engine) geram um <b>script de CLI nativo</b> (<code>.txt</code>) pronto pra colar no console do switch. Você preenche os campos e o resultado aparece ao vivo à direita.</p>
+        <ol>
+          <li><b>Escolha o alvo</b> no topo: um fabricante de rede (Cisco IOS/IOS-XE, Cisco NX-OS, Extreme EXOS, Ruckus ICX, <b>Extreme Fabric — VOSS</b>), <b>Genérico</b> (qualquer outro fabricante) ou <b>Servidor Linux</b>.</li>
+          <li><b>Preencha os campos.</b> Comece com <b>⟳ Exemplo</b> para ver um modelo pronto e adaptar.</li>
+          <li><b>Campos mutáveis:</b> botões <b>+</b> criam, o texto edita, o <b>✕</b> apaga, e ▲▼ reordenam.</li>
+          <li>Para rede, você descreve a <b>intenção</b> (VLAN, portas, IP, etc.) e a ferramenta monta as <code>tasks</code> com o módulo certo do fabricante (<code>ios_config</code>, <code>nxos_config</code>, <code>exos_config</code>, <code>icx_config</code>, <code>voss_config</code>…). No alvo <b>Genérico</b> você informa o <code>ansible_network_os</code> e o módulo, e usa o bloco de <b>linhas de configuração</b>.</li>
+          <li>No modo/alvo <b>Fabric</b> (Extreme VOSS) você tem o ciclo completo: <b>underlay SPBM/IS-IS</b>, portas <b>NNI</b>, <b>L2 VSN</b> (VLAN↔<b>I-SID</b>), portas de acesso, <b>SVI</b>, <b>IP Shortcuts</b>, <b>L3 VSN</b> (VRF) e <b>MLT/SMLT</b>. Valores como system-id, nickname e B-VIDs vêm do seu plano de fabric — <b>revise antes de aplicar</b>.</li>
+          <li><b>Verificação de digitação:</b> nas <b>linhas de configuração (livre)</b> a ferramenta confere cada linha enquanto você digita e avisa em vermelho, abaixo do campo, se encontrar comando não reconhecido (em qualquer posição da linha), pontuação indevida (<code>;</code>, vírgula/ponto/<code>:</code> colados em palavra), aspas sem fechar, <code>?</code> ou caractere inválido — apontando a <b>linha e a coluna</b> e sugerindo a correção. No alvo <b>Genérico</b> valem só as checagens estruturais.</li>
+          <li><b>🧪 Testar:</b> quando o script estiver pronto, clique em <b>Testar</b> (acima da prévia) para rodar uma <b>simulação local</b>: ela confere campos obrigatórios, formatos (IP, VLAN 1–4094, portas), digitação, VLAN duplicada, inventário e se há passo de salvar — e mostra um relatório com erros, avisos e itens OK. É uma verificação da ferramenta, não substitui o teste no equipamento.</li>
+          <li><b>Senha:</b> no modo Ansible, o campo <b>Senha</b> (e a de <b>enable</b>, quando aplicável) vai direto para o <code>hosts.ini</code>. Se deixar vazio, sai como comentário para você preencher depois.</li>
+        </ol>
+        <p class="help-note">⚠️ O conteúdo fica só na memória desta aba e <b>some ao recarregar</b>. Você pode <b>⬆ Importar</b> um playbook <code>.yml</code> ou um script <code>.txt</code> (EXOS/Ruckus): a ferramenta detecta a aba automaticamente e remonta as intenções (o que não reconhecer vira bloco de <i>linhas livres</i>). Nada vai para a internet.</p>
+        <div class="warnbox">⚙️ Os assistentes geram a sintaxe usual de cada fabricante — <b>revise antes de aplicar em produção</b>.</div>
+      </div>
+    </details>
+    <div class="toolbar">
+      <button class="btn-primary" onclick="saveToClient()">💾 Salvar no cliente</button>
+      <button class="btn-ghost" onclick="loadExample()">⟳ Exemplo</button>
+      <button class="btn-ghost" onclick="resetTarget()">🗑 Limpar</button>
+      <a id="docBtn" class="btn-ghost" href="#" target="_blank" rel="noopener noreferrer" style="display:none;text-decoration:none">📖 Documentação</a>
+      <button class="btn-ghost" onclick="document.getElementById('imp').click()" title="Importar .yml / .txt">⬆ Importar</button>
+      <input type="file" id="imp" accept=".yml,.yaml,.txt,.json" style="display:none" onchange="importDef(event)">
+      <span id="openProjLabel" style="margin-left:auto;font-size:13.5px;color:var(--text);align-self:center;display:flex;align-items:center;gap:6px"></span>
+    </div>
+    <div id="target-card"></div>
+    <div id="panel-linux" style="display:none"></div>
+    <div id="panel-net" style="display:none"></div>
+    <div id="panel-cli" style="display:none"></div>
+  </div>
+
+  <div class="right">
+    <div class="tabs" id="tabs"></div>
+    <div class="right-actions">
+      <button class="btn-ghost" onclick="runScriptTest()">🧪 Testar</button>
+      <button class="btn-ghost" id="copyBtn" onclick="copyActive()">📋 Copiar</button>
+      <button class="btn-ghost" onclick="downloadActive()">⬇ Baixar arquivo</button>
+      <button class="btn-primary" onclick="downloadAll()">⬇ Baixar todos</button>
+    </div>
+    <pre id="output"></pre>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Scripts da Aplicação (ordem de dependências) -->
+<script src="js/config.js"></script>
+<script src="js/linter.js"></script>
+<script src="js/validator.js"></script>
+<script src="js/ui-panels.js"></script>
+<script src="js/generators.js"></script>
+<script src="js/ui-actions.js"></script>
+<script src="js/importer.js"></script>
+<script src="js/store.js"></script>
+<script src="js/modals.js"></script>
+<script src="js/legacy-translator.js"></script>
+<script src="js/hub.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
