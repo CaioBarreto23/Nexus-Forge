@@ -2,7 +2,7 @@
    Controle de acesso local (localStorage). NÃO é seguro contra usuários
    técnicos — é um controle organizacional. Senhas guardadas como hash simples. */
 const AUTH_KEY='nexus_forge_auth_users', SESSION_KEY='nexus_forge_auth_session';
-function _hash(s){ // hash simples (djb2) — evita senha em texto puro, sem pretensão de criptografia forte
+function _hash(s){
   s=String(s||''); let h=5381; for(let i=0;i<s.length;i++){ h=((h<<5)+h+s.charCodeAt(i))>>>0; }
   return 'h'+h.toString(16);
 }
@@ -35,16 +35,14 @@ const auth={
     if(dup)return {ok:false,err:'Já existe um usuário com esse e-mail/login.'};
     const u=db.users.find(x=>x.id===id); if(!u)return {ok:false,err:'Usuário não encontrado.'};
     u.user=newUser; this._save(db);
-    // se o usuário editado for o da sessão atual, atualiza a sessão
     const s=this.session(); if(s&&s.id===id){ this.setSession(Object.assign({},u)); }
     return {ok:true};
   },
   remove(id){ const db=this._load(); db.users=db.users.filter(x=>x.id!==id); this._save(db); },
-  // sessão
   session(){ try{ const r=localStorage.getItem(SESSION_KEY); return r?JSON.parse(r):null; }catch(e){ return null; } },
   setSession(u){ try{ localStorage.setItem(SESSION_KEY,JSON.stringify({id:u.id,user:u.user,name:u.name,role:u.role})); }catch(e){} },
   clearSession(){ try{ localStorage.removeItem(SESSION_KEY); }catch(e){} },
-  current(){ const s=this.session(); if(!s)return null; const u=this.find(s.user); return u||null; } // revalida contra a base
+  current(){ const s=this.session(); if(!s)return null; const u=this.find(s.user); return u||null; }
 };
 let authMode='login';
 function authSwitch(m){
@@ -72,7 +70,6 @@ function authSwitch(m){
   authError('');
 }
 function authError(msg){
-  // mostra o erro no formulário ativo
   const id=(authMode==='signup')?'authErrorReg':'authError';
   ['authError','authErrorReg'].forEach(x=>{ const e=document.getElementById(x); if(e){e.style.display='none';} });
   const e=document.getElementById(id); if(!e)return;
@@ -90,7 +87,6 @@ function authSubmit(){
     const pass=document.getElementById('authPassReg').value;
     if(!email||!pass){ authError('Preencha e-mail e senha.'); return; }
     if(!isValidGmail(email)){ authError('Use obrigatoriamente um e-mail válido terminando em @gmail.com.'); return; }
-    // o e-mail é usado como login (usuário)
     const role=isFirst?'admin':'user';
     const r=auth.create(email,pass,name,role);
     if(!r.ok){ authError(r.err); return; }
@@ -108,11 +104,7 @@ function authSubmit(){
 function refreshAuthGateUI(){
   const isFirst=auth.count()===0;
   document.getElementById('authFirstMsg').style.display=isFirst?'block':'none';
-  // As abas Entrar/Criar conta só existiriam para autocadastro. Como o cadastro público
-  // foi desativado, as abas ficam sempre escondidas: no primeiro acesso mostra o cadastro
-  // (criar admin), depois mostra apenas o login. Novos usuários são criados pelo admin.
   document.getElementById('authTabs').style.display='none';
-  // logos (esquerda + mobile) a partir da logo do hub
   const lg=document.querySelector('.hub-logo img');
   if(lg){ ['authLogoLeft','authLogoMobile'].forEach(id=>{ const el=document.getElementById(id); if(el)el.src=lg.src; }); }
   if(isFirst){ authSwitch('signup'); }
@@ -133,7 +125,6 @@ function enterApp(){
   state=freshState();
   goHub();
   updateUserBadge();
-  // inicializa o histórico de navegação com a tela inicial (clientes)
   _navReady=true;
   try{ history.replaceState({screen:'clients'},''); }catch(e){}
 }
@@ -145,33 +136,28 @@ function doLogout(){
 }
 function updateUserBadge(){
   const cur=auth.current();
-  // sincroniza a logo da área de scripts com a logo do hub
   const hubLogo=document.querySelector('.hub-logo img'); const sLogo=document.getElementById('scriptsLogo');
   if(hubLogo&&sLogo&&hubLogo.src) sLogo.src=hubLogo.src;
-  // o botão "Usuários" só aparece na tela principal (lista de clientes) e para admins
   const onMainScreen = (typeof openProject==='undefined'||!openProject) && (typeof hubView!=='undefined' && hubView.level==='clients');
+  const usersSvg = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
   const badge=cur=>{
     if(!cur)return '';
     const initials=(cur.name||cur.user).trim().slice(0,2).toUpperCase();
     const roleLbl=cur.role==='admin'?'Administrador':'Usuário';
-    return '<div class="user-badge"><span class="ub-avatar">'+esc(initials)+'</span>'+
-      '<span><div>'+esc(cur.name||cur.user)+'</div><div class="ub-role">'+roleLbl+'</div></span></div>';
+    return '<div class="user-badge"><span class="ub-avatar" style="background:linear-gradient(135deg,#7C3AED,#10B981);color:#fff">'+esc(initials)+'</span>'+
+      '<span><div style="font-weight:600;line-height:1.2">'+esc(cur.name||cur.user)+'</div><div class="ub-role">'+roleLbl+'</div></span></div>';
   };
-  // Hub (tela de clientes e projetos): badge + (Usuários só na principal) + Sair
   const hubEl=document.getElementById('userBadge');
   if(hubEl){ hubEl.innerHTML = cur ? (badge(cur)+
-    ((cur.role==='admin'&&onMainScreen)?'<button class="btn-logout" style="margin-left:4px" onclick="openUserAdmin()">👥 Usuários</button>':'')+
+    ((cur.role==='admin'&&onMainScreen)?'<button class="btn-ghost" style="padding:7px 12px;font-size:12.5px" onclick="openUserAdmin()">'+usersSvg+' Usuários</button>':'')+
     '<button class="btn-logout" onclick="doLogout()">Sair</button>') : ''; }
-  // Área de scripts: badge + Sair (nunca o botão Usuários)
   const scrEl=document.getElementById('userBadgeScripts');
   if(scrEl){ scrEl.innerHTML = cur ? (badge(cur)+'<button class="btn-logout" onclick="doLogout()">Sair</button>') : ''; }
 }
-/* Registra acesso/edição no histórico do projeto (quem e quando). */
 function logAccess(action,clientId,projId){
   const cur=auth.current(); if(!cur)return;
-  if(action==='login')return; // login geral não vai pro histórico de projeto
+  if(action==='login')return;
 }
-/* Painel do admin: listar, promover/rebaixar e deletar usuários. */
 function openUserAdmin(){
   const cur=auth.current();
   if(!cur||cur.role!=='admin'){ uiAlert({title:'Acesso restrito',message:'Apenas administradores podem gerenciar usuários.'}); return; }
@@ -182,27 +168,26 @@ function openUserAdmin(){
       const isSelf=u.id===cur.id;
       const initials=(u.name||u.user).trim().slice(0,2).toUpperCase();
       const roleLbl=u.role==='admin'?'Administrador':'Usuário';
-      // não deixa rebaixar/remover o último admin
       const lastAdmin=(u.role==='admin'&&admins<=1);
       const toggleBtn = u.role==='admin'
         ? '<button class="ua-btn" '+(lastAdmin?'disabled title="É o único administrador"':'onclick="uaSetRole(\''+u.id+'\',\'user\')"')+'>↓ Tornar usuário</button>'
         : '<button class="ua-btn" onclick="uaSetRole(\''+u.id+'\',\'admin\')">↑ Tornar admin</button>';
-      const delBtn = (isSelf||lastAdmin) ? '<button class="ua-btn del" disabled title="'+(isSelf?'Você não pode se remover':'É o único administrador')+'">🗑</button>'
-        : '<button class="ua-btn del" onclick="uaRemove(\''+u.id+'\',\''+esc(u.user)+'\')">🗑</button>';
+      const delBtn = (isSelf||lastAdmin) ? '<button class="ua-btn del" disabled title="'+(isSelf?'Você não pode se remover':'É o único administrador')+'">✕</button>'
+        : '<button class="ua-btn del" onclick="uaRemove(\''+u.id+'\',\''+esc(u.user)+'\')">✕</button>';
       const editBtn = '<button class="ua-btn" title="Editar e-mail/login" onclick="uaEditUser(\''+u.id+'\',\''+esc(u.user)+'\')">✎ E-mail</button>';
       return '<div class="ua-row">'+
-        '<div class="ua-id"><span class="ua-avatar">'+esc(initials)+'</span><span class="ua-main">'+
+        '<div class="ua-id"><span class="ua-avatar" style="background:linear-gradient(135deg,#7C3AED,#10B981);color:#fff">'+esc(initials)+'</span><span class="ua-main">'+
         '<span class="ua-name">'+esc(u.name||u.user)+(isSelf?' <em>(você)</em>':'')+'</span>'+
-        '<span class="ua-user">@'+esc(u.user)+' · '+roleLbl+'</span></span></div>'+
+        '<span class="ua-user">'+esc(u.user)+' · '+roleLbl+'</span></span></div>'+
         '<div class="ua-actions">'+editBtn+toggleBtn+delBtn+'</div>'+
       '</div>';
     }).join('');
     return '<div class="useradmin-modal">'+
       '<button class="modal-close" title="Fechar">✕</button>'+
-      '<h3>👥 Gerenciar usuários</h3>'+
+      '<h3>Gerenciar usuários</h3>'+
       '<p class="modal-msg">Promova ou rebaixe o nível de acesso e remova usuários. Todos os logins devem utilizar o formato <b>@gmail.com</b>.</p>'+
       '<div class="ua-list">'+rows+'</div>'+
-      '<div class="ua-add"><button class="auth-submit" style="width:auto;padding:9px 16px" onclick="uaNewUser()">+ Novo usuário</button></div>'+
+      '<div class="ua-add"><button class="btn-primary" onclick="uaNewUser()">+ Novo usuário</button></div>'+
     '</div>';
   };
   const ov=_buildModal(render());
@@ -241,25 +226,23 @@ async function uaNewUser(){
   if(!r.ok){ await uiAlert({title:'Não foi possível criar',message:r.err}); return; }
   if(window._uaRerender)window._uaRerender(); toast('Usuário criado');
 }
-/* Mostra o histórico de um projeto (quem criou/editou e quando) + versões restauráveis. */
 function showProjectHistory(clientId,projId){
   const c=store.client(clientId); if(!c)return;
   const p=(c.projects||[]).find(x=>x.id===projId); if(!p)return;
   const hist=(p.history||[]).slice().reverse();
   const rows=hist.length? hist.map(h=>{
-    const ic=h.action==='criou'?'✨':(h.action==='restaurou versão'?'↩️':'✏️');
+    const ic=h.action==='criou'?'✨':(h.action==='restaurou versão'?'↩':'✎');
     return '<div class="ph-row"><span class="ph-ic">'+ic+'</span><span class="ph-main">'+
       '<span class="ph-who">'+esc(h.by||'desconhecido')+'</span> '+esc(h.action)+' o projeto'+
       '<span class="ph-when">'+fmtDateTime(h.at)+'</span></span></div>';
   }).join('') : '<div class="pv-empty">Sem histórico registrado.</div>';
 
-  // Versões restauráveis (fila de até 4), da mais recente para a mais antiga.
   const versions=(p.versions||[]);
-  const topIdx=versions.length-1; // a mais recente da fila = "versão atual" (não restaurável)
+  const topIdx=versions.length-1;
   const vrows = versions.length ? versions.map((v,idx)=>idx).reverse().map(idx=>{
     const v=versions[idx];
-    const isCurrent=(idx===topIdx); // topo da lista sempre marcado como atual
-    const num=idx+1; // nº estável na fila (mais recente = maior)
+    const isCurrent=(idx===topIdx);
+    const num=idx+1;
     const right = isCurrent
       ? '<span class="pv-tag-current">Versão atual</span>'
       : '<button class="pv-restore" data-v="'+idx+'">Restaurar</button>';
@@ -273,7 +256,7 @@ function showProjectHistory(clientId,projId){
 
   const ov=_buildModal('<div class="history-modal">'+
     '<button class="modal-close" title="Fechar">✕</button>'+
-    '<h3>🕘 Histórico do projeto</h3>'+
+    '<h3>Histórico do projeto</h3>'+
     '<p class="modal-msg">Projeto <b>'+esc(p.name||'')+'</b>'+(p.createdBy?' · criado por '+esc(p.createdBy):'')+'</p>'+
     '<div class="ph-section-title">Versões anteriores</div>'+
     '<div class="ph-list">'+vrows+'</div>'+
@@ -283,7 +266,6 @@ function showProjectHistory(clientId,projId){
   _modalOpen=true;
   const done=()=>{ document.removeEventListener('keydown',onKey); _closeModal(ov); };
   ov.querySelector('.modal-close').onclick=done;
-  // botões de restaurar
   ov.querySelectorAll('.pv-restore').forEach(function(btn){
     btn.onclick=async function(){
       const vIdx=+btn.getAttribute('data-v');
@@ -291,7 +273,6 @@ function showProjectHistory(clientId,projId){
       if(!ok)return;
       const restored=store.restoreVersion(clientId,projId,vIdx);
       if(!restored){ toast('Não foi possível restaurar'); return; }
-      // se o projeto restaurado for o que está aberto, recarrega o estado em tela
       if(openProject&&openProject.clientId===clientId&&openProject.projId===projId){
         state=clone(restored); if(typeof render==='function')render();
       }
@@ -303,6 +284,5 @@ function showProjectHistory(clientId,projId){
   function onKey(e){ if(e.key==='Escape'){e.preventDefault();done();} }
   document.addEventListener('keydown',onKey);
 }
-/* Formata data+hora para o histórico. */
 function fmtDateTime(ts){ if(!ts)return''; const d=new Date(ts);
   return d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }

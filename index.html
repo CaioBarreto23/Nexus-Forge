@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nexus Forge — Gerador de Playbooks Ansible & Scripts CLI</title>
+  <title>Nexus Forge — Orquestração & Automação de Redes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/auth.css">
   <link rel="stylesheet" href="css/hub.css">
@@ -114,27 +117,40 @@
     </div>
   </div>
 </div>
+
 <div id="hub">
+  <div class="hub-ambient-purple"></div>
+  <div class="hub-ambient-green"></div>
   <div class="hub-header">
-    <div class="hub-logo" onclick="logoHome()" style="cursor:pointer" title="Voltar ao dashboard"><img src="assets/img/logo.svg" alt="Nexus Forge"></div>
-    <div>
-      <h1>Nexus Forge</h1>
-      <div class="sub">Automação e implementação de rede · projetos por cliente</div>
+    <div class="hub-brand" onclick="logoHome()" title="Voltar ao dashboard">
+      <div class="hub-logo"><img src="assets/img/logo.svg" alt="Nexus Forge"></div>
+      <div>
+        <h1>Nexus <span class="ag-grad">Forge</span></h1>
+        <div class="sub">Orquestração &amp; automação de infraestrutura</div>
+      </div>
     </div>
     <div class="hub-actions">
-      <span id="hubBackupActions" style="display:flex;gap:10px;align-items:center">
-        <button class="btn-ghost" onclick="exportDB()">⬇ Exportar backup</button>
-        <button class="btn-ghost" onclick="document.getElementById('dbimp').click()">⬆ Importar backup</button>
+      <span id="hubBackupActions" class="hub-backup-group">
+        <button class="btn-ghost" onclick="exportDB()">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Exportar backup
+        </button>
+        <button class="btn-ghost" onclick="document.getElementById('dbimp').click()">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Importar backup
+        </button>
         <input type="file" id="dbimp" accept=".json" style="display:none" onchange="importDB(event)">
       </span>
-      <span id="userBadge" style="display:flex;align-items:center;gap:8px;margin-left:8px"></span>
+      <span id="userBadge" class="hub-user-area"></span>
     </div>
   </div>
   <div class="hub-body" id="hubBody"></div>
 </div>
 
 <header>
-  <button class="back-link" onclick="goProjects()" style="margin-right:2px" title="Voltar para projetos">←</button>
+  <button class="back-link" onclick="goProjects()" style="margin-right:2px" title="Voltar para projetos">
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+  </button>
   <div class="logo" onclick="logoHome()" style="cursor:pointer" title="Voltar ao dashboard"><img id="scriptsLogo" src="assets/img/logo.svg" alt="Nexus Forge"></div>
   <div>
     <h1 id="appTitle">Gerador de Playbooks Ansible</h1>
@@ -146,7 +162,7 @@
     <button data-mode="ruckus" onclick="setMode('ruckus')">Ruckus</button>
     <button data-mode="fabric" onclick="setMode('fabric')">Fabric</button>
   </div>
-  <span id="userBadgeScripts" style="display:flex;align-items:center;gap:8px"></span>
+  <span id="userBadgeScripts" class="hub-user-area"></span>
 </header>
 
 <div class="wrap">
